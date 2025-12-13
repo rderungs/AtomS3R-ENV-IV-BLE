@@ -83,10 +83,6 @@ void loop()
   M5.update();
   Units.update();
 
-  const uint32_t nowMs = millis();
-  if ((int32_t)(nowMs - nextEnvMs) >= 0) {
-    nextEnvMs += 1000;
-
     if (sht40.updated()) {
       float T = sht40.temperature();
       int16_t t100 = (int16_t)lroundf(T * 100.0f);
@@ -99,11 +95,12 @@ void loop()
       cHum->notify();
     }
 
-    float P = bmp280.pressure();
-    uint32_t pPa = (uint32_t)lroundf(P);
-    cPres->setValue((uint8_t *)&pPa, sizeof(pPa));
-    cPres->notify();
-  }
+    if(bmp280.updated()) {
+      float P = bmp280.pressure();
+      uint32_t pPa = (uint32_t)lroundf(P);
+      cPres->setValue((uint8_t *)&pPa, sizeof(pPa));
+      cPres->notify();
+    }
 
-  delay(1);
+  delay(1000);
 }
